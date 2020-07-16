@@ -1,33 +1,87 @@
 
 import React, { Component } from 'react';
 import './App.css'; 
-
+import {Button} from 'react-bootstrap';
 class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
       users: [],
-      pageNum: 1. 
+      pageNum: 1, 
     }
   }
   componentDidMount() {
-    const url = 'https://reqres.in/api/users?page=${this.State.pageNum}';
-    fetch(url)
-    .then(response => response.json())
-    .then(res => this.setState({users: res.data}))
+    this.changePage(this.state.pageNum)
   }
+
+
+
+  changePage(pageNum) {
+    console.log(pageNum) 
+    const url = `https://reqres.in/api/users?page=${pageNum}`;
+    console.log(url)
+    fetch(url)
+    .then(res => {
+      console.log(res.json);
+      return res.json()
+    })
+    .then(res => this.setState({users: res.data, pageNum: pageNum }))
+
+  }
+
   render() {
     const { users } = this.state;
 
      return (
-       <div>
-        <p>Users List:</p>
+       <div className="container">
+          <div className="jumbotron">
+                <h1 class="display-4">Users List:</h1>
+              </div>
+              <div className="users">
         {users.map((user) => (
-            <p key={user.id}>{user.first_name} {user.last_name} <img src={user.avatar}/></p>
-              
-         
+          <div className="card" key={user.id}>
+          <img src={user.avatar} class="card-img-top" alt={`${user.email} avatar`} />
+          <div className= "card-body">
+        <h5 className="card-title">{user.first_name} {user.last_name}</h5>
+        <p className="card-text">{user.email}</p>
+            
+          </div>
+        </div>   
         ) ) }
        </div>
+       <Button variant="success" >Click me </Button>
+       
+
+        <div className="cbtn-group" role="group" aria-label="Basic example">
+          <Button variant="primary"
+            type="button" 
+            disabled={this.state.pageNum === 1 ? true : false}
+            className="custom-cbtn" 
+            onClick={() => this.changePage(this.state.pageNum - 1)} 
+            >
+              Prev
+            </Button>
+
+
+           
+          <Button variant="success"
+            type="button" 
+            className="custom-cbtn" 
+            disabled={this.state.pageNum === this.state.pageNum ? true : false}
+            >
+              {this.state.pageNum}
+             
+            </Button>
+          <Button variant="primary" 
+          type="button" 
+
+          className="custom-cbtn"
+          onClick={() => this.changePage(this.state.pageNum + 1)} 
+          >
+            Next
+            </Button>
+        </div>
+      </div>
   )
   }
 }
